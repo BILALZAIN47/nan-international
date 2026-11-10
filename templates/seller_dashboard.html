@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block title %}Seller Dashboard | NandN International{% endblock %}
+{% block content %}
+<section class="seller-wrap">
+  <div class="seller-head">
+    <div class="section-kicker">SELLER PORTAL · NandN INTERNATIONAL</div>
+    <div class="seller-title-row">
+      <div>
+        <h1>Merchant <em>Workspace.</em></h1>
+        <p class="form-sub">Manage your storefront details, product inventory, and customer-facing listings.</p>
+      </div>
+      {% if active_shop %}
+      <a class="btn btn-gold" href="{{ url_for('shop_detail', shop_id=active_shop.id) }}" target="_blank">
+        View Public Shop Page <span>↗</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if my_shops and my_shops|length > 1 %}
+  <div class="shop-tabs">
+    <span class="tabs-label">Your Managed Shops:</span>
+    {% for s in my_shops %}
+      <a class="tab-chip {% if active_shop and active_shop.id == s.id %}active{% endif %}" href="{{ url_for('seller_dashboard', shop_id=s.id) }}">
+        {{ s.name }} (ID #{{ s.id }})
+      </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="seller-stats">
+    <div class="stat-card">
+      <small>PRODUCTS LISTED</small>
+      <strong>{{ stats.total_items }}</strong>
+      <span>In your catalog</span>
+    </div>
+    <div class="stat-card">
+      <small>ACTIVE IN STOCK</small>
+      <strong class="text-success">{{ stats.in_stock }}</strong>
+      <span>Ready for buyers</span>
+    </div>
+    <div class="stat-card">
+      <small>STOCK ALERTS</small>
+      <strong class="text-warning">{{ stats.low_stock }}</strong>
+      <span>Low or zero stock</span>
+    </div>
+    <div class="stat-card">
+      <small>STORE STATUS</small>
+      <strong class="text-gold">Active</strong>
+      <span>{{ active_shop.market_area or 'Faisalabad' if active_shop else 'Pending' }}</span>
+    </div>
+  </div>
+
+  {% if not active_shop %}
+  <div class="empty-state">
+    <div>🏪</div>
+    <h2>No Shop Connected Yet</h2>
+    <p>Please contact NandN Administrator to associate your merchant account with a shop record.</p>
+  </div>
+  {% else %}
+  <div class="seller-grid">
+    <!-- Left Column: Shop Profile -->
+    <div class="seller-box">
+      <div class="box-head">
+        <h2>Storefront Profile</h2>
+        <span class="card-id">Shop #{{ '%03d'|format(active_shop.id) }}</span>
+      </div>
+      <p class="box-desc">These business details are visible to thousands of buyers in the directory.</p>
+
+      <form method="post" action="{{ url_for('seller_update_shop') }}" class="seller-form">
+        <input type="hidden" name="shop_id" value="{{ active_shop.id }}">
+        
+        <label>Shop / Brand Name *
+          <input name="name" value="{{ active_shop.name }}" required>
+        </label>
+        
+        <div class="form-row-2">
+          <label>Market / Hub Area
+            <input name="market_area" value="{{ active_shop.market_area or '' }}">
+          </label>
+          <label>Contact Phone / WhatsApp
+            <input name="phone" value="{{ active_shop.phone or '' }}">
+          </label>
+        </div>
+
+        <label>Physical Address
+          <input name="address" value="{{ active_shop.address or '' }}">
+        </label>
+
+        <div class="form-row-2">
+          <label>Primary Product Line
+            <input name="product_line" value="{{ active_shop.product_line or '' }}" placeholder="e.g. Luxury Bedsheets & Quilts">
+          </label>
+          <label>Price Range (PKR)
+            <input name="price_range" value="{{ active_shop.price_range or '' }}" placeholder="e.g. 1,500 - 6,000">
+          </label>
+        </div>
+
+        <label>Top Selling Products
+          <input name="top_products" value="{{ active_shop.top_products or '' }}" placeholder="e.g. Printed Cotton, Velvet Blankets">
+        </label>
+
+        <button class="btn btn-primary" type="submit">Save Store Details <span>↗</span></button>
+      </form>
+    </div>
+
+    <!-- Right Column: Add Product & Inventory -->
+    <div class="seller-box">
+      <div class="box-head">
+        <h2>Add Product to Catalog</h2>
+        <span class="badge-pill">Inventory Item</span>
+      </div>
+      <p class="box-desc">Add a new textile or bedsheet product to your shop's stock record.</p>
+
+      <form method="post" action="{{ url_for('seller_add_inventory') }}" class="seller-form">
+        <input type="hidden" name="shop_id" value="{{ active_shop.id }}">
+
+        <label>Product Name *
+          <input name="item_name" placeholder="e.g. Royal Satin King Bedsheet" required>
+        </label>
+
+        <div class="form-row-2">
+          <label>SKU / Model Code
+            <input name="sku" placeholder="e.g. SKU-SAT-101">
+          </label>
+          <label>Category
+            <input name="category" placeholder="e.g. Bedding / Blankets">
+          </label>
+        </div>
+
+        <div class="form-row-2">
+          <label>Stock Quantity (Units)
+            <input type="number" name="quantity" min="0" value="25" required>
+          </label>
+          <label>Price (PKR)
+            <input name="unit_price" placeholder="e.g. 3,500 PKR">
+          </label>
+        </div>
+
+        <button class="btn btn-gold" type="submit">Add Product to Store <span>↗</span></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Full Width Products Table -->
+  <div class="seller-box full-width">
+    <div class="box-head">
+      <h2>Your Listed Products & Inventory ({{ items|length }})</h2>
+      <span class="tabs-label">Live stock sync with Warehouse Controller</span>
+    </div>
+    
+    {% if items %}
+    <div class="table-responsive">
+      <table class="luxury-table">
+        <thead>
+          <tr>
+            <th>ITEM & SKU</th>
+            <th>CATEGORY</th>
+            <th>PRICE</th>
+            <th>STOCK QUANTITY</th>
+            <th>STATUS</th>
+            <th>LAST UPDATED</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <b>{{ item.item_name }}</b>
+              <small class="muted-sku">{{ item.sku or 'No SKU' }}</small>
+            </td>
+            <td><span class="category-chip">{{ item.category or 'General' }}</span></td>
+            <td><b>{{ item.unit_price or 'On Request' }}</b></td>
+            <td><span class="quantity-tag">{{ item.quantity }} units</span></td>
+            <td>
+              {% if item.status == 'In Stock' %}
+                <span class="status-pill status-in-stock">● In Stock</span>
+              {% elif item.status == 'Low Stock' %}
+                <span class="status-pill status-low-stock">▲ Low Stock</span>
+              {% else %}
+                <span class="status-pill status-out-of-stock">✕ Out of Stock</span>
+              {% endif %}
+            </td>
+            <td><small>{{ item.updated_at[:10] }}</small></td>
+            <td>
+              <form method="post" action="{{ url_for('seller_delete_inventory', item_id=item.id) }}" onsubmit="return confirm('Remove this product from your inventory?');">
+                <button type="submit" class="btn-delete" title="Delete product">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-inline">
+      <p>No products added to this shop yet. Use the form above to add your first product!</p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
+

@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Control Room | NandN International{% endblock %}
+{% block content %}
+<section class="inventory-wrap">
+  <div class="inventory-head">
+    <div class="section-kicker">CENTRAL WAREHOUSE & STOCK CONTROLLER</div>
+    <div class="inventory-title-row">
+      <div>
+        <h1>Inventory <em>Control Room.</em></h1>
+        <p class="form-sub">Monitor live warehouse stock levels, configure low-stock alerts, and update merchant inventories.</p>
+      </div>
+      <a class="btn btn-gold" href="#add-stock-section">
+        + Log New Warehouse Intake <span>↓</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Stats Grid -->
+  <div class="inventory-kpis">
+    <div class="kpi-card">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-data">
+        <small>TOTAL UNITS IN STOCK</small>
+        <strong>{{ stats.total_units }}</strong>
+        <span>Across all registered shops</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon">🏷️</div>
+      <div class="kpi-data">
+        <small>CATALOG ITEMS</small>
+        <strong>{{ stats.total_items }}</strong>
+        <span>Unique product SKUs</span>
+      </div>
+    </div>
+
+    <div class="kpi-card alert-warning">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-data">
+        <small>LOW STOCK ALERTS</small>
+        <strong class="text-warning">{{ stats.low_stock }}</strong>
+        <span>Near minimum threshold</span>
+      </div>
+    </div>
+
+    <div class="kpi-card alert-danger">
+      <div class="kpi-icon">🚨</div>
+      <div class="kpi-data">
+        <small>OUT OF STOCK</small>
+        <strong class="text-danger">{{ stats.out_of_stock }}</strong>
+        <span>Needs immediate restock</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Bar -->
+  <div class="inventory-filter-bar">
+    <form method="get" action="{{ url_for('inventory_dashboard') }}" class="filter-form">
+      <div class="search-field">
+        <span>⌕</span>
+        <input type="search" name="q" value="{{ q }}" placeholder="Search by SKU, product name, or category…">
+      </div>
+
+      <select name="status">
+        <option value="">All Stock Statuses</option>
+        <option value="In Stock" {% if status_filter=='In Stock' %}selected{% endif %}>In Stock</option>
+        <option value="Low Stock" {% if status_filter=='Low Stock' %}selected{% endif %}>Low Stock</option>
+        <option value="Out of Stock" {% if status_filter=='Out of Stock' %}selected{% endif %}>Out of Stock</option>
+      </select>
+
+      <select name="shop_id">
+        <option value="">All Merchant Stores</option>
+        {% for s in shops %}
+          <option value="{{ s.id }}" {% if shop_filter==s.id|string %}selected{% endif %}>#{{ s.id }} - {{ s.name }}</option>
+        {% endfor %}
+      </select>
+
+      <button class="btn btn-primary" type="submit">Filter ↗</button>
+      {% if q or status_filter or shop_filter %}
+        <a class="clear-link" href="{{ url_for('inventory_dashboard') }}">Reset</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Main Stock Management Table -->
+  <div class="inventory-box">
+    <div class="box-head">
+      <h2>Master Inventory Registry ({{ items|length }} records)</h2>
+      <span class="tabs-label">Real-time database sync</span>
+    </div>
+
+    {% if items %}
+    <div class="table-responsive">
+      <table class="luxury-table inventory-table">
+        <thead>
+          <tr>
+            <th>ID / SKU</th>
+            <th>PRODUCT NAME & SHOP</th>
+            <th>CATEGORY</th>
+            <th>PRICE</th>
+            <th>QUANTITY & THRESHOLD</th>
+            <th>STATUS</th>
+            <th>QUICK STOCK UPDATE</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr class="{% if item.status == 'Out of Stock' %}row-danger{% elif item.status == 'Low Stock' %}row-warning{% endif %}">
+            <td>
+              <span class="card-id">#{{ item.id }}</span>
+              <small class="muted-sku">{{ item.sku or 'SKU-NONE' }}</small>
+            </td>
+            <td>
+              <b>{{ item.item_name }}</b>
+              <small class="shop-badge">🏪 {{ item.shop_name or 'Shop #' ~ item.shop_id }}</small>
+            </td>
+            <td><span class="category-chip">{{ item.category or 'General' }}</span></td>
+            <td>{{ item.unit_price or '—' }}</td>
+            <td>
+              <b class="qty-text">{{ item.quantity }}</b> units
+              <small class="text-muted">(Min: {{ item.low_stock_threshold }})</small>
+            </td>
+            <td>
+              {% if item.status == 'In Stock' %}
+                <span class="status-pill status-in-stock">● In Stock</span>
+              {% elif item.status == 'Low Stock' %}
+                <span class="status-pill status-low-stock">▲ Low Stock</span>
+              {% else %}
+                <span class="status-pill status-out-of-stock">✕ Out of Stock</span>
+              {% endif %}
+            </td>
+            <td>
+              <!-- Inline Quick Quantity Update -->
+              <form method="post" action="{{ url_for('inventory_update', item_id=item.id) }}" class="inline-qty-form">
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="0" title="Stock Quantity" class="input-mini">
+                <input type="hidden" name="low_stock_threshold" value="{{ item.low_stock_threshold }}">
+                <input type="hidden" name="unit_price" value="{{ item.unit_price }}">
+                <button type="submit" class="btn-mini" title="Save new quantity">Update</button>
+              </form>
+            </td>
+            <td>
+              <form method="post" action="{{ url_for('inventory_delete', item_id=item.id) }}" onsubmit="return confirm('Delete this inventory item from the registry?');">
+                <button type="submit" class="btn-delete" title="Delete record">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-inline">
+      <p>No inventory items match your current filter. Clear filters or add new stock below.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Add New Stock Section -->
+  <div id="add-stock-section" class="inventory-box" style="margin-top: 35px;">
+    <div class="box-head">
+      <h2>Log New Warehouse Intake</h2>
+      <span class="badge-pill">+ Inbound Shipment</span>
+    </div>
+    <p class="box-desc">Register incoming textile rolls, bedsheet sets, or blanket cartons to the central registry.</p>
+
+    <form method="post" action="{{ url_for('inventory_add') }}" class="inventory-intake-form">
+      <div class="form-row-3">
+        <label>Assign to Merchant Store *
+          <select name="shop_id" required>
+            {% for s in shops %}
+              <option value="{{ s.id }}">#{{ s.id }} - {{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <label>Item / Product Name *
+          <input name="item_name" placeholder="e.g. Premium Flannel Double Blanket" required>
+        </label>
+
+        <label>SKU / Barcode
+          <input name="sku" placeholder="e.g. SKU-FLN-505">
+        </label>
+      </div>
+
+      <div class="form-row-4">
+        <label>Category
+          <input name="category" placeholder="e.g. Blankets / Bedding">
+        </label>
+
+        <label>Initial Units in Stock *
+          <input type="number" name="quantity" min="0" value="50" required>
+        </label>
+
+        <label>Low Stock Warning Threshold
+          <input type="number" name="low_stock_threshold" min="1" value="15" required>
+        </label>
+
+        <label>Unit Wholesale / Listed Price
+          <input name="unit_price" placeholder="e.g. 4,200 PKR">
+        </label>
+      </div>
+
+      <button class="btn btn-gold" type="submit" style="margin-top: 15px;">
+        Register Stock Intake <span>↗</span>
+      </button>
+    </form>
+  </div>
+</section>
+{% endblock %}
+

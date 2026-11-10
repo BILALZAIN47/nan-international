@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Create account' if mode=='register' else 'Sign in' }} | NandN International{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-art">
+    <div class="auth-pattern"></div>
+    <div class="auth-art-copy">
+      <div class="eyebrow">NandN INTERNATIONAL</div>
+      <h2>A little more<br><em>comfort in every</em><br>connection.</h2>
+      <p>Explore a growing world of bedding, blankets, and home textile businesses — tailored for buyers, merchants, and inventory controllers.</p>
+      <div class="auth-mini">✦ &nbsp; BUYERS · MERCHANTS · INVENTORY · TEXTILES</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="form-kicker">WELCOME TO NANDN INTERNATIONAL</div>
+    <h1>{{ 'Create your account' if mode=='register' else 'Welcome back' }}</h1>
+    <p class="form-sub">
+      {{ 'Select your role to access the directory, merchant tools, or warehouse inventory.' if mode=='register' else 'Sign in to access your role-specific dashboard.' }}
+    </p>
+
+    <form method="post" class="auth-form" id="main-auth-form">
+      {% if mode=='register' %}
+        <label>Full name *
+          <input name="name" type="text" placeholder="Your name" maxlength="100" required autocomplete="name">
+        </label>
+
+        <label>Account Role *
+          <select name="role" id="role-select" required onchange="toggleShopInput(this.value)">
+            <option value="buyer" selected>🛍️ Buyer / Customer (Browse & Source)</option>
+            <option value="seller">🏪 Seller / Merchant (Storefront & Product Catalog)</option>
+            <option value="inventory">📦 Inventory Controller (Warehouse & Stock Management)</option>
+          </select>
+        </label>
+
+        <div id="seller-shop-wrap" style="display: none;">
+          <label>Store / Business Name
+            <input name="shop_name" type="text" placeholder="e.g. Royal Bedding & Linen">
+          </label>
+        </div>
+      {% endif %}
+
+      <label>Email address *
+        <input name="email" id="auth-email" type="email" placeholder="you@example.com" required autocomplete="email">
+      </label>
+
+      <label>Password *
+        <input name="password" id="auth-password" type="password" placeholder="At least 8 characters" required minlength="8" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}">
+      </label>
+
+      {% if mode=='register' %}
+        <label>Confirm password *
+          <input name="confirm" type="password" placeholder="Enter password again" required minlength="8" autocomplete="new-password">
+        </label>
+      {% endif %}
+
+      <button class="btn btn-primary btn-full" type="submit">
+        {{ 'Create account' if mode=='register' else 'Sign in securely' }} <span>↗</span>
+      </button>
+    </form>
+
+    <p class="switch-auth">
+      {{ 'Already have an account?' if mode=='register' else 'New to NandN International?' }}
+      <a href="{{ url_for('login' if mode=='register' else 'register') }}">
+        {{ 'Sign in' if mode=='register' else 'Create an account' }}
+      </a>
+    </p>
+
+    {% if mode=='login' %}
+    <div class="demo-logins-box">
+      <div class="demo-header">✦ &nbsp; QUICK DEMO ACCOUNTS &nbsp; ✦</div>
+      <div class="demo-accounts-grid">
+        <div class="demo-pill" onclick="fillLogin('buyer@nandn.local', 'Buyer@2026')">
+          <span class="role-chip chip-buyer">Buyer</span>
+          <b>buyer@nandn.local</b>
+          <small>Pass: Buyer@2026</small>
+        </div>
+        <div class="demo-pill" onclick="fillLogin('seller@nandn.local', 'Seller@2026')">
+          <span class="role-chip chip-seller">Seller</span>
+          <b>seller@nandn.local</b>
+          <small>Pass: Seller@2026</small>
+        </div>
+        <div class="demo-pill" onclick="fillLogin('inventory@nandn.local', 'Inventory@2026')">
+          <span class="role-chip chip-inventory">Inventory</span>
+          <b>inventory@nandn.local</b>
+          <small>Pass: Inventory@2026</small>
+        </div>
+        <div class="demo-pill" onclick="fillLogin('admin@nandn.local', 'NandN@2026')">
+          <span class="role-chip chip-admin">Admin</span>
+          <b>admin@nandn.local</b>
+          <small>Pass: NandN@2026</small>
+        </div>
+      </div>
+      <small class="demo-click-hint">Click any box above to autofill credentials automatically.</small>
+    </div>
+    {% endif %}
+
+    <div class="secure-note">▣ &nbsp; Your password is stored securely as a cryptographic hash.</div>
+  </div>
+</section>
+
+<script>
+function toggleShopInput(role) {
+  const wrap = document.getElementById('seller-shop-wrap');
+  if (wrap) {
+    wrap.style.display = (role === 'seller') ? 'block' : 'none';
+  }
+}
+function fillLogin(email, pw) {
+  const eInput = document.getElementById('auth-email');
+  const pInput = document.getElementById('auth-password');
+  if (eInput && pInput) {
+    eInput.value = email;
+    pInput.value = pw;
+    eInput.focus();
+  }
+}
+</script>
+{% endblock %}

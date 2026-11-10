@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Register as a Buyer' if mode=='register' else 'Login as a Buyer' }} | NandN International{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-art auth-art-buyer">
+    <div class="auth-pattern"></div>
+    <div class="auth-art-copy">
+      <div class="eyebrow">🛍️ &nbsp; BUYER & WHOLESALE CUSTOMER PORTAL</div>
+      <h2>Discover fine fabrics<br><em>at direct merchant</em><br>pricing.</h2>
+      <p>Search over 500 verified bedsheet, blanket, and home textile manufacturers across Faisalabad and Punjab.</p>
+      <div class="auth-mini">✦ &nbsp; DIRECTORY · VERIFIED INVENTORY · DIRECT CONTACT</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="portal-indicator-chip chip-buyer">PORTAL 01 · BUYER ACCESS</div>
+    <h1>{{ 'Register as a Buyer' if mode=='register' else 'Login as a Buyer' }}</h1>
+    <p class="form-sub">
+      {{ 'Register to bookmark favourite shops, view complete inventories, and contact sellers.' if mode=='register' else 'Enter your buyer account credentials to access the shop directory.' }}
+    </p>
+
+    <form method="post" action="{{ url_for('buyer_register' if mode=='register' else 'buyer_login') }}" class="auth-form">
+      {% if mode=='register' %}
+      <label>Full Name *
+        <input name="name" type="text" placeholder="e.g. Zubair Ahmad" maxlength="100" required autocomplete="name">
+      </label>
+      {% endif %}
+
+      <label>Email Address *
+        <input name="email" id="buyer-email" type="email" placeholder="buyer@example.com" required autocomplete="email">
+      </label>
+
+      <label>Password *
+        <input name="password" id="buyer-password" type="password" placeholder="At least 8 characters" required minlength="8" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}">
+      </label>
+
+      {% if mode=='register' %}
+      <label>Confirm Password *
+        <input name="confirm" type="password" placeholder="Re-enter your password" required minlength="8" autocomplete="new-password">
+      </label>
+      {% endif %}
+
+      <button class="btn btn-primary btn-full" type="submit">
+        {{ 'Create Buyer Account' if mode=='register' else 'Sign In as Buyer' }} <span>↗</span>
+      </button>
+    </form>
+
+    <p class="switch-auth">
+      {% if mode=='register' %}
+        Already have a buyer account? <a href="{{ url_for('buyer_login') }}">Sign in here</a>
+      {% else %}
+        New wholesale customer? <a href="{{ url_for('buyer_register') }}">Create free buyer account</a>
+      {% endif %}
+    </p>
+
+    {% if mode=='login' %}
+    <div class="dedicated-demo-card" onclick="autofillBuyer()">
+      <span class="role-chip chip-buyer">QUICK DEMO BUYER</span>
+      <b>buyer@nandn.local</b>
+      <small>Password: <code>BuyerPass@123</code> &nbsp;(Click to autofill)</small>
+    </div>
+    {% endif %}
+
+    <div class="other-portals-link">
+      <span>Looking for another portal?</span>
+      <a href="{{ url_for('portals_gateway') }}">View All Portals ↗</a>
+    </div>
+  </div>
+</section>
+
+<script>
+function autofillBuyer() {
+  const e = document.getElementById('buyer-email');
+  const p = document.getElementById('buyer-password');
+  if (e && p) {
+    e.value = 'buyer@nandn.local';
+    p.value = 'BuyerPass@123';
+    e.focus();
+  }
+}
+</script>
+{% endblock %}
+

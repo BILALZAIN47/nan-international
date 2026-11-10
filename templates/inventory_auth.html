@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Login as Inventory Control | NandN International{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-art auth-art-inventory">
+    <div class="auth-pattern"></div>
+    <div class="auth-art-copy">
+      <div class="eyebrow">📦 &nbsp; CENTRAL WAREHOUSE & INVENTORY GATE</div>
+      <h2>Precision logistics,<br><em>real-time stock</em><br>governance.</h2>
+      <p>Log incoming textile shipments, track stock levels, and coordinate with over 500 merchant storefronts across Punjab.</p>
+      <div class="auth-mini">✦ &nbsp; STOCK CONTROL · BULK INTAKE · THRESHOLD ALERTS</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="portal-indicator-chip chip-inventory">PORTAL 03 · WAREHOUSE CONTROLLER</div>
+    <h1>Login as Inventory Control</h1>
+    <p class="form-sub">
+      Restricted access for Central Warehouse Managers and Stock Audit staff.
+    </p>
+
+    <form method="post" action="{{ url_for('inventory_login') }}" class="auth-form">
+      <label>Staff Official Email *
+        <input name="email" id="inv-email" type="email" placeholder="inventory@example.com" required autocomplete="email">
+      </label>
+
+      <label>Access Password *
+        <input name="password" id="inv-password" type="password" placeholder="Enter secure password" required autocomplete="current-password">
+      </label>
+
+      <button class="btn btn-dark btn-full" type="submit">
+        Authenticate & Enter Control Room <span>↗</span>
+      </button>
+    </form>
+
+    <div class="secure-note" style="margin-top: 20px;">
+      🔒 &nbsp; Inventory operations are logged and audited in real time.
+    </div>
+
+    <div class="dedicated-demo-card demo-inventory" onclick="autofillInventory()">
+      <span class="role-chip chip-inventory">QUICK DEMO CONTROLLER</span>
+      <b>inventory@nandn.local</b>
+      <small>Password: <code>InventoryPass@789</code> &nbsp;(Click to autofill)</small>
+    </div>
+
+    <div class="other-portals-link">
+      <span>Looking for another portal?</span>
+      <a href="{{ url_for('portals_gateway') }}">View All Portals ↗</a>
+    </div>
+  </div>
+</section>
+
+<script>
+function autofillInventory() {
+  const e = document.getElementById('inv-email');
+  const p = document.getElementById('inv-password');
+  if (e && p) {
+    e.value = 'inventory@nandn.local';
+    p.value = 'InventoryPass@789';
+    e.focus();
+  }
+}
+</script>
+{% endblock %}
+

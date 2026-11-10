@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Register as a Seller' if mode=='register' else 'Login as a Seller' }} | NandN International{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-art auth-art-seller">
+    <div class="auth-pattern"></div>
+    <div class="auth-art-copy">
+      <div class="eyebrow">🏪 &nbsp; SELLER & MERCHANT PORTAL</div>
+      <h2>Grow your textile business<br><em>with digital reach</em><br>across Pakistan.</h2>
+      <p>List your store, showcase your bedding, bedsheets and blankets, and manage live inventory connected to our central directory.</p>
+      <div class="auth-mini">✦ &nbsp; STORE PROFILE · CATALOG MANAGEMENT · LIVE INVENTORY</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="portal-indicator-chip chip-seller">PORTAL 02 · SELLER ACCESS</div>
+    <h1>{{ 'Register as a Seller' if mode=='register' else 'Login as a Seller' }}</h1>
+    <p class="form-sub">
+      {{ 'Register as a merchant to create your digital storefront and list products.' if mode=='register' else 'Enter your merchant credentials to manage your store and stock catalog.' }}
+    </p>
+
+    <form method="post" action="{{ url_for('seller_register' if mode=='register' else 'seller_login') }}" class="auth-form">
+      {% if mode=='register' %}
+      <label>Your Full Name *
+        <input name="name" type="text" placeholder="e.g. Tariq Mehmood" maxlength="100" required autocomplete="name">
+      </label>
+
+      <label>Shop / Brand Name *
+        <input name="shop_name" type="text" placeholder="e.g. Tariq Textiles & Bedding" required>
+      </label>
+
+      <div class="form-row-2">
+        <label>Market / City Area *
+          <input name="market_area" type="text" placeholder="e.g. Clock Tower Market" required>
+        </label>
+
+        <label>Contact Phone / WhatsApp *
+          <input name="phone" type="text" placeholder="e.g. 0300-1234567" required>
+        </label>
+      </div>
+      {% endif %}
+
+      <label>Merchant Email Address *
+        <input name="email" id="seller-email" type="email" placeholder="seller@example.com" required autocomplete="email">
+      </label>
+
+      <label>Password *
+        <input name="password" id="seller-password" type="password" placeholder="At least 8 characters" required minlength="8" autocomplete="{{ 'new-password' if mode=='register' else 'current-password' }}">
+      </label>
+
+      {% if mode=='register' %}
+      <label>Confirm Password *
+        <input name="confirm" type="password" placeholder="Re-enter your password" required minlength="8" autocomplete="new-password">
+      </label>
+      {% endif %}
+
+      <button class="btn btn-gold btn-full" type="submit">
+        {{ 'Complete Shop Registration' if mode=='register' else 'Sign In to Seller Portal' }} <span>↗</span>
+      </button>
+    </form>
+
+    <p class="switch-auth">
+      {% if mode=='register' %}
+        Already have a seller account? <a href="{{ url_for('seller_login') }}">Sign in to your portal</a>
+      {% else %}
+        Want to sell on NandN? <a href="{{ url_for('seller_register') }}">Register your textile store</a>
+      {% endif %}
+    </p>
+
+    {% if mode=='login' %}
+    <div class="dedicated-demo-card demo-seller" onclick="autofillSeller()">
+      <span class="role-chip chip-seller">QUICK DEMO SELLER</span>
+      <b>seller@nandn.local</b>
+      <small>Password: <code>SellerPass@456</code> &nbsp;(Click to autofill)</small>
+    </div>
+    {% endif %}
+
+    <div class="other-portals-link">
+      <span>Looking for another portal?</span>
+      <a href="{{ url_for('portals_gateway') }}">View All Portals ↗</a>
+    </div>
+  </div>
+</section>
+
+<script>
+function autofillSeller() {
+  const e = document.getElementById('seller-email');
+  const p = document.getElementById('seller-password');
+  if (e && p) {
+    e.value = 'seller@nandn.local';
+    p.value = 'SellerPass@456';
+    e.focus();
+  }
+}
+</script>
+{% endblock %}
+

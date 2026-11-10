@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Administrator Sign In | NandN International{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-art auth-art-admin">
+    <div class="auth-pattern"></div>
+    <div class="auth-art-copy">
+      <div class="eyebrow">🛡️ &nbsp; PLATFORM ADMINISTRATION</div>
+      <h2>System oversight,<br><em>governance &</em><br>directory control.</h2>
+      <p>Platform management, registered user roles, directory audits, and database controls.</p>
+      <div class="auth-mini">✦ &nbsp; ACCESS LEVEL: ROOT SYSTEM ADMIN</div>
+    </div>
+  </div>
+
+  <div class="auth-panel">
+    <div class="portal-indicator-chip chip-admin">SECURITY LEVEL · SUPER ADMIN</div>
+    <h1>Administrator Sign In</h1>
+    <p class="form-sub">Sign in with authorized administrator credentials.</p>
+
+    <form method="post" action="{{ url_for('admin_login') }}" class="auth-form">
+      <label>Admin Email *
+        <input name="email" id="admin-email" type="email" placeholder="admin@example.com" required autocomplete="email">
+      </label>
+
+      <label>Master Password *
+        <input name="password" id="admin-password" type="password" placeholder="Admin password" required autocomplete="current-password">
+      </label>
+
+      <button class="btn btn-primary btn-full" type="submit">
+        Sign In as Administrator <span>↗</span>
+      </button>
+    </form>
+
+    <div class="dedicated-demo-card demo-admin" onclick="autofillAdmin()">
+      <span class="role-chip chip-admin">QUICK DEMO ADMIN</span>
+      <b>admin@nandn.local</b>
+      <small>Password: <code>AdminPass@999</code> &nbsp;(Click to autofill)</small>
+    </div>
+
+    <div class="other-portals-link">
+      <span>Looking for another portal?</span>
+      <a href="{{ url_for('portals_gateway') }}">View All Portals ↗</a>
+    </div>
+  </div>
+</section>
+
+<script>
+function autofillAdmin() {
+  const e = document.getElementById('admin-email');
+  const p = document.getElementById('admin-password');
+  if (e && p) {
+    e.value = 'admin@nandn.local';
+    p.value = 'AdminPass@999';
+    e.focus();
+  }
+}
+</script>
+{% endblock %}
+

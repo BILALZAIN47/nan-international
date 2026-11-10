@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Portals Gateway | NandN International{% endblock %}
+{% block content %}
+<section class="gateway-wrap">
+  <div class="gateway-header">
+    <div class="section-kicker">✦ &nbsp; ACCESS CONTROL & PORTALS &nbsp; ✦</div>
+    <h1>Select Your <em>Workspace Portal.</em></h1>
+    <p class="form-sub">NandN International provides dedicated portals for buyers, shop merchants, and warehouse stock managers.</p>
+  </div>
+
+  <div class="gateway-cards-grid">
+    <!-- 1. Buyer Portal Card -->
+    <div class="portal-card portal-buyer">
+      <div class="portal-badge">PORTAL 01</div>
+      <div class="portal-icon">🛍️</div>
+      <h2>Buyer & Customer</h2>
+      <p>Browse 500+ Faisalabad textile businesses, bedsheets, blankets, and check verified in-stock items.</p>
+      
+      <div class="portal-actions">
+        <a class="btn btn-primary btn-full" href="{{ url_for('buyer_login') }}">
+          Buyer Login <span>↗</span>
+        </a>
+        <a class="portal-sublink" href="{{ url_for('buyer_register') }}">
+          New customer? Create Buyer Account →
+        </a>
+      </div>
+      <div class="portal-demo-hint">
+        Demo: <b>buyer@nandn.local</b> / <b>BuyerPass@123</b>
+      </div>
+    </div>
+
+    <!-- 2. Seller Portal Card -->
+    <div class="portal-card portal-seller">
+      <div class="portal-badge badge-seller">PORTAL 02</div>
+      <div class="portal-icon">🏪</div>
+      <h2>Seller & Merchant</h2>
+      <p>Manage your storefront information, list new bedsheets and blanket products, and update shop inventory.</p>
+      
+      <div class="portal-actions">
+        <a class="btn btn-gold btn-full" href="{{ url_for('seller_login') }}">
+          Seller Login <span>↗</span>
+        </a>
+        <a class="portal-sublink" href="{{ url_for('seller_register') }}">
+          New merchant? Register Your Shop →
+        </a>
+      </div>
+      <div class="portal-demo-hint">
+        Demo: <b>seller@nandn.local</b> / <b>SellerPass@456</b>
+      </div>
+    </div>
+
+    <!-- 3. Inventory Controller Card -->
+    <div class="portal-card portal-inventory">
+      <div class="portal-badge badge-inventory">PORTAL 03</div>
+      <div class="portal-icon">📦</div>
+      <h2>Inventory Controller</h2>
+      <p>Central warehouse control room for stock intake, low-stock threshold alerts, and merchant inventory coordination.</p>
+      
+      <div class="portal-actions">
+        <a class="btn btn-dark btn-full" href="{{ url_for('inventory_login') }}">
+          Inventory Login <span>↗</span>
+        </a>
+        <span class="portal-sublink text-muted">
+          Access restricted to warehouse staff
+        </span>
+      </div>
+      <div class="portal-demo-hint">
+        Demo: <b>inventory@nandn.local</b> / <b>InventoryPass@789</b>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-footnote">
+    <span>Platform Administrator?</span>
+    <a href="{{ url_for('admin_login') }}">Access Admin Control Room ↗</a>
+  </div>
+</section>
+{% endblock %}
+
